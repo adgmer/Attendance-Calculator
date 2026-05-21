@@ -1,0 +1,494 @@
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Attendance Calculator</title>
+    
+    
+    <style>
+        /* --- CSS  --- */
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --text-dark: #2d3748;
+            --text-light: #f7fafc;
+            --accent: #ff0080;
+            --success: #48bb78;
+            --danger: #f56565;
+            --warning: #ecc94b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: #0f2027; /* fallback for old browsers */
+            background: -webkit-linear-gradient(to right, #2c5364, #203a43, #0f2027);
+            background: linear-gradient(to right, #2c5364, #203a43, #0f2027);
+            color: var(--text-dark);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* --- NAVIGATION --- */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.2rem 5%;
+            background: rgba(15, 32, 39, 0.9);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-light);
+            letter-spacing: 1px;
+        }
+
+        .logo span {
+            color: #667eea;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+
+        .nav-links li {
+            margin: 0 15px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: rgba(255,255,255,0.8);
+            font-weight: 500;
+            transition: 0.3s;
+            position: relative;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: #fff;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background-color: #667eea;
+            transition: width 0.3s;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* --- HERO SECTION --- */
+        section {
+            padding: 100px 5% 50px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #home {
+            text-align: center;
+            color: var(--text-light);
+            position: relative;
+        }
+
+        #home h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            line-height: 1.2;
+            background: linear-gradient(to right, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: fadeInDown 1s ease;
+        }
+
+        #home p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            max-width: 600px;
+            opacity: 0.8;
+            animation: fadeInUp 1s ease 0.3s backwards;
+        }
+
+        .cta-btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: var(--primary-gradient);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(118, 75, 162, 0.4);
+            transition: transform 0.3s, box-shadow 0.3s;
+            animation: fadeInUp 1s ease 0.6s backwards;
+        }
+
+        .cta-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(118, 75, 162, 0.6);
+        }
+
+        /* --- CALCULATOR CARD (GLASSMORPHISM) --- */
+        #calculator {
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            color: var(--text-light);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+            transform: rotate(45deg);
+            pointer-events: none;
+        }
+
+        .glass-card h2 {
+            margin-bottom: 25px;
+            font-size: 2rem;
+            color: #fff;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: rgba(255,255,255,0.8);
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 1rem;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .input-group input:focus {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #667eea;
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+        }
+
+        .calc-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary-gradient);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .calc-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        /* --- RESULT DISPLAY --- */
+        #result-container {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 10px;
+            background: rgba(0,0,0,0.2);
+            display: none; /* Hidden by default */
+            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .result-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: transparent;
+            border: 8px solid rgba(255,255,255,0.1);
+            margin: 0 auto 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .result-circle span {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+        
+        .result-circle small {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        .status-msg {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-top: 10px;
+        }
+        
+        .prediction-box {
+            margin-top: 15px;
+            font-size: 0.95rem;
+            background: rgba(255,255,255,0.08);
+            padding: 10px;
+            border-radius: 8px;
+            border-left: 4px solid var(--text-light);
+        }
+
+        /* --- FOOTER --- */
+        footer {
+            background: rgba(15, 32, 39, 0.95);
+            color: rgba(255,255,255,0.6);
+            padding: 20px;
+            text-align: center;
+            font-size: 0.9rem;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        /* --- ANIMATIONS --- */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes popIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* --- MOBILE RESPONSIVE --- */
+        @media (max-width: 768px) {
+            #home h1 { font-size: 2.5rem; }
+            .nav-links { display: none; }
+            .glass-card { padding: 30px 20px; }
+            section { padding: 80px 5% 40px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVIGATION -->
+    <nav>
+        <div class="logo">%<span>CALCULATOR</span></div>
+        <ul class="nav-links">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#calculator" class="active">Calculator</a></li>
+        </ul>
+    </nav>
+
+    <!-- HOME SECTION -->
+    <section id="home">
+        <h1>Track Your Academic Progress</h1>
+        <p>Stay on top of your attendance with our smart, instant calculator. Never miss a critical threshold again.</p>
+        <a href="#calculator" class="cta-btn">Check Attendance <i class="fas fa-arrow-right"></i></a>
+    </section>
+
+    <!-- CALCULATOR SECTION -->
+    <section id="calculator">
+        <div class="glass-card">
+            <h2>Attendance Planner</h2>
+            
+            <div class="input-group">
+                <label for="total"><i class="fas fa-chalkboard"></i> Total Lectures Held</label>
+                <input type="number" id="total" placeholder="e.g. 50">
+            </div>
+
+            <div class="input-group">
+                <label for="attended"><i class="fas fa-user-check"></i> Lectures Attended</label>
+                <input type="number" id="attended" placeholder="e.g. 35">
+            </div>
+            
+            <div class="input-group">
+                <label for="target"><i class="fas fa-bullseye"></i> Target Percentage (%)</label>
+                <input type="number" id="target" value="75" placeholder="e.g. 75">
+            </div>
+
+            <button class="calc-btn" onclick="calculate()">
+                <i class="fas fa-calculator"></i> Calculate & Predict
+            </button>
+
+            <!-- Result Display -->
+            <div id="result-container">
+                <div class="result-circle" id="circle-border">
+                    <span id="percent-text">0%</span>
+                    <small>Attendance</small>
+                </div>
+                <p class="status-msg" id="status-text">Your status will appear here.</p>
+                <div class="prediction-box" id="prediction-text" style="display:none;"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ABOUT SECTION -->
+    <section id="about" style="min-height: 40vh; text-align: center; color: white;">
+        <h2 style="font-size: 2.5rem; margin-bottom: 20px;">About This Project</h2>
+        <p style="max-width: 600px; line-height: 1.6; opacity: 0.8;">
+            This project was developed as part of the <strong>Fullstack Website Development Internship</strong> at EISystems Services. 
+            It utilizes Semantic HTML5, CSS3 Glassmorphism effects, and JavaScript for real-time logic.
+        </p>
+    </section>
+
+    <footer>
+        <p>&copy; 2025 Student Portal Project. Designed by SOURAV</p>
+    </footer>
+
+    <script>
+        function calculate() {
+            // 1. Get Elements
+            const totalInput = document.getElementById('total');
+            const attendedInput = document.getElementById('attended');
+            const targetInput = document.getElementById('target');
+            
+            const resultContainer = document.getElementById('result-container');
+            const percentText = document.getElementById('percent-text');
+            const statusText = document.getElementById('status-text');
+            const circleBorder = document.getElementById('circle-border');
+            const predictionText = document.getElementById('prediction-text');
+
+            // 2. Parse Values
+            let total = parseFloat(totalInput.value);
+            let attended = parseFloat(attendedInput.value);
+            let target = parseFloat(targetInput.value);
+
+            // 3. Validation Logic
+            if (isNaN(total) || isNaN(attended) || total <= 0) {
+                alert("Please enter valid positive numbers for total lectures.");
+                return;
+            }
+            if (attended < 0) {
+                alert("Attended lectures cannot be negative.");
+                return;
+            }
+            if (attended > total) {
+                alert("Attended classes cannot be greater than total classes!");
+                return;
+            }
+            if (isNaN(target) || target <= 0 || target > 100) {
+                alert("Please enter a valid target percentage (1-100).");
+                return;
+            }
+
+            // 4. Calculate Percentage
+            let percentage = (attended / total) * 100;
+            let finalPercent = percentage.toFixed(2);
+
+            // 5. Update UI Basic
+            resultContainer.style.display = 'block';
+            percentText.innerText = finalPercent + "%";
+            predictionText.style.display = 'block';
+
+            // 6. Logic for Color & Message
+            if (percentage >= target) {
+                circleBorder.style.borderColor = "var(--success)";
+                circleBorder.style.color = "var(--success)";
+                statusText.innerText = "You are on track!";
+                statusText.style.color = "var(--success)";
+                
+                // Prediction: Classes to bunk
+                // Formula: (Attended) / (Total + x) >= Target/100
+                // x <= (Attended / (Target/100)) - Total
+                let targetDecimal = target / 100;
+                let daysToBunk = Math.floor((attended / targetDecimal) - total);
+                
+                if (daysToBunk > 0) {
+                     predictionText.innerHTML = `<i class="fas fa-check-circle"></i> Good News: You can skip the next <strong>${daysToBunk}</strong> classes and still maintain ${target}%.`;
+                     predictionText.style.borderLeftColor = "var(--success)";
+                } else {
+                     predictionText.innerHTML = `<i class="fas fa-info-circle"></i> You are just above target. Don't miss the next class!`;
+                     predictionText.style.borderLeftColor = "var(--warning)";
+                }
+
+            } else {
+                circleBorder.style.borderColor = "var(--danger)";
+                circleBorder.style.color = "var(--danger)";
+                statusText.innerText = "You are short of attendance.";
+                statusText.style.color = "var(--danger)";
+
+                // Prediction: Classes needed
+                // Formula: (Attended + x) / (Total + x) >= Target/100
+                // x >= (Target*Total - Attended) / (1 - Target)
+                let targetDecimal = target / 100;
+                let numerator = (targetDecimal * total) - attended;
+                let denominator = 1 - targetDecimal;
+                
+                if (denominator === 0) {
+                    // Target is 100% and current is < 100% -> Impossible to recover
+                    predictionText.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Impossible to reach 100% once you've missed a class.`;
+                    predictionText.style.borderLeftColor = "var(--danger)";
+                } else {
+                    let classesNeeded = Math.ceil(numerator / denominator);
+                    predictionText.innerHTML = `<i class="fas fa-book-reader"></i> Action Plan: You need to attend the next <strong>${classesNeeded}</strong> classes consecutively to reach ${target}%.`;
+                    predictionText.style.borderLeftColor = "var(--danger)";
+                }
+            }
+
+            // Scroll to result on mobile
+            resultContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    </script>
+</body>
+</html>
